@@ -13,6 +13,8 @@ spring:
         format_sql: true
         show_sql: false
 
+    open-in-view: false
+
 logging:
   level:
     org.hibernate.SQL: debug
