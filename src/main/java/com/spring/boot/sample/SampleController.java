@@ -1,9 +1,8 @@
 package com.spring.boot.sample;
 
 import com.spring.boot.sample.validator.SampleValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -30,18 +29,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@Slf4j
+@RequiredArgsConstructor
 public class SampleController {
 
-    Logger logger = LoggerFactory.getLogger(SampleController.class);
-
-    @Autowired
-    private SampleService sampleService;
-
-    @Autowired
-    RestTemplateBuilder restTemplateBuilder;
-
-    @Autowired
-    SampleValidator sampleValidator;
+    private final SampleService sampleService;
+    private final RestTemplateBuilder restTemplateBuilder;
+    private final SampleValidator sampleValidator;
 
     private RestTemplate restTemplate() {
         return restTemplateBuilder
@@ -100,7 +94,7 @@ public class SampleController {
     @RequestMapping("/web-query")
     public Map<String, String> webQuery(@RequestParam Map<String, String> param) {
 
-        logger.info("query : " + param);
+        log.info("query : " + param);
 
         return new HashMap<String, String>() {{
             put("code", "success.");
