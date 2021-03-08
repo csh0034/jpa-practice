@@ -1,31 +1,23 @@
 package com.spring.boot.sample;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
+@Getter
+@Setter
+@ToString
 public class SampleVO {
 
+    @NotBlank
     private String key1;
+
     private String key2;
 
-    @Override
-    public String toString() {
-        return "SampleVO{" +
-                "key1='" + key1 + '\'' +
-                ", key2='" + key2 + '\'' +
-                '}';
-    }
-
-    public String getKey1() {
-        return key1;
-    }
-
-    public void setKey1(String key1) {
-        this.key1 = key1;
-    }
-
-    public String getKey2() {
-        return key2;
-    }
-
-    public void setKey2(String key2) {
-        this.key2 = key2;
-    }
+    @Email
+    @NotBlank
+    private String email;
 }

@@ -1,5 +1,6 @@
 package com.spring.boot.sample;
 
+import com.spring.boot.sample.validator.SampleValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,9 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,6 +39,9 @@ public class SampleController {
 
     @Autowired
     RestTemplateBuilder restTemplateBuilder;
+
+    @Autowired
+    SampleValidator sampleValidator;
 
     private RestTemplate restTemplate() {
         return restTemplateBuilder
@@ -100,6 +106,23 @@ public class SampleController {
             put("code", "success.");
             put("message", "IP is unauthorized");
         }};
+    }
+
+    @GetMapping("/valid")
+    public SampleVO sampleVO(SampleVO sampleVO, BindingResult bindingResult) {
+
+        if (ObjectUtils.isEmpty(sampleVO.getKey1())) {
+            bindingResult.rejectValue("key1","key1.empty");
+        }
+        if (ObjectUtils.isEmpty(sampleVO.getEmail())) {
+            bindingResult.rejectValue("email","email.empty");
+        }
+
+        if (bindingResult.hasErrors()) {
+            // throw exception
+        }
+
+        return sampleVO;
     }
 
     @GetMapping("/download/{filename}")
