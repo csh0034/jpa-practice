@@ -10,8 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 @SpringBootTest
 @Transactional
@@ -22,33 +21,32 @@ public class MemberServiceTest {
     @Autowired EntityManager em;
 
     @Test
-    public void 회원가입() throws Exception {
-        //given
+    public void join() throws Exception {
+        // GIVEN
         Member member = new Member();
         member.setName("choi");
 
-        //when
+        // WHEN
         Long savedId = memberService.join(member);
 
-        //then
+        // THEN
         em.flush();
         assertThat(member).isEqualTo(memberRepository.findOne(savedId));
     }
 
     @Test
-    public void 중복_회원_예외() throws Exception {
-        //given
+    public void throw_duplicate_member() throws Exception {
+        //GIVEN
         Member member1 = new Member();
         member1.setName("choi");
 
         Member member2 = new Member();
         member2.setName("choi");
 
-        //when
+        //WHEN
         memberService.join(member1);
 
-        //then
-        assertThrows(IllegalStateException.class,
-                () -> memberService.join(member2));
+        //THEN
+        assertThatIllegalStateException().isThrownBy(() -> memberService.join(member2));
     }
 }
