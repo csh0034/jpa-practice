@@ -20,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -36,6 +37,7 @@ public class SampleController {
     private final SampleService sampleService;
     private final RestTemplateBuilder restTemplateBuilder;
     private final SampleValidator sampleValidator;
+    private final HttpSession httpSession;
 
     private RestTemplate restTemplate() {
         return restTemplateBuilder
@@ -96,28 +98,17 @@ public class SampleController {
 
         log.info("query : " + param);
 
-        return new HashMap<String, String>() {{
+        HashMap<String, String> map = new HashMap<String, String>() {
+            private static final long serialVersionUID = 1511054834345342759L;
+            {
             put("code", "success.");
             put("message", "IP is unauthorized");
         }};
+
+        httpSession.setAttribute("map", "abc");
+        return map;
     }
 
-    @GetMapping("/valid")
-    public SampleVO sampleVO(SampleVO sampleVO, BindingResult bindingResult) {
-
-        if (ObjectUtils.isEmpty(sampleVO.getKey1())) {
-            bindingResult.rejectValue("key1","key1.empty");
-        }
-        if (ObjectUtils.isEmpty(sampleVO.getEmail())) {
-            bindingResult.rejectValue("email","email.empty");
-        }
-
-        if (bindingResult.hasErrors()) {
-            // throw exception
-        }
-
-        return sampleVO;
-    }
 
     @GetMapping("/download/{filename}")
     public ResponseEntity<Resource> download(@PathVariable String filename) throws IOException {

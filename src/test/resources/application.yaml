@@ -15,6 +15,8 @@ spring:
         show_sql: false
 
     open-in-view: false
+  session:
+    store-type: none
 
 logging:
   level:
