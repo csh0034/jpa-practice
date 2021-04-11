@@ -79,7 +79,22 @@ public class OrderServiceTest {
 
     @Test
     public void 주문취소() {
-        //...
+        // GIVEN
+        Member member = createMember();
+        Item item = createBook("시골 JPA", 10000, 10);
+
+        int orderCount = 2;
+
+        Long orderId = orderService.order(member.getId(), item.getId(), orderCount);
+
+        // WHEN
+        orderService.cancelOrder(orderId);
+
+        // THEN
+        Order getOrder = orderRepository.findOne(orderId);
+
+        assertThat(OrderStatus.CANCEL).as("주문 취소시 상태는 CANCEL 이다.").isEqualTo(getOrder.getStatus());
+        assertThat(10).as("주문이 취소된 상품은 그만큼 재고가 증가해야 한다.").isEqualTo(item.getStockQuantity());
     }
 
     private Member createMember() {
