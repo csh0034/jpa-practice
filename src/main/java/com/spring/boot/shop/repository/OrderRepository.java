@@ -87,4 +87,19 @@ public class OrderRepository {
                         " join fetch o.delivery d", Order.class)
                 .getResultList();
     }
+
+    /**
+     * distinct 역할
+     * 1. DB에 distinct
+     * 2. Order 가 중복 될 경우 중복 제거
+     */
+    public List<Order> findAllWithItem() {
+        return em.createQuery(
+                "select distinct o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d" +
+                        " join fetch o.orderItems oi" +
+                        " join fetch oi.item i", Order.class)
+                .getResultList();
+    }
 }
