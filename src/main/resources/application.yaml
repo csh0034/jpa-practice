@@ -1,4 +1,3 @@
-
 spring:
   datasource:
     url: jdbc:h2:mem:test;DB_CLOSE_ON_EXIT=FALSE
@@ -13,6 +12,7 @@ spring:
       hibernate:
         format_sql: true
         show_sql: false
+        default_batch_fetch_size: 100
 
     #open-in-view: false
 
@@ -20,5 +20,6 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql: trace
+
 server:
-  port: 8888
+  port: 80

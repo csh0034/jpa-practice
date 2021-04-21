@@ -100,6 +100,18 @@ public class OrderRepository {
                         " join fetch o.delivery d" +
                         " join fetch o.orderItems oi" +
                         " join fetch oi.item i", Order.class)
+                .setFirstResult(0)
+                .setMaxResults(100)
+                .getResultList();
+    }
+
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery(
+                "select o from Order o" +
+                        " join fetch o.member m" +
+                        " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
                 .getResultList();
     }
 }
