@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>study</groupId>
-        <artifactId>module</artifactId>
+        <artifactId>jpa-practice</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <groupId>study</groupId>

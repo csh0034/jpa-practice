@@ -6,10 +6,15 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.4.3</version>
-        <relativePath/>
     </parent>
     <groupId>study</groupId>
-    <artifactId>module</artifactId>
+    <artifactId>jpa-practice</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>module</name>
+    <name>jpa-practice</name>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>data-jpa</module>
+        <module>raw-jpa</module>
+    </modules>
 </project>
