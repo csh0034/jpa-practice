@@ -5,12 +5,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
@@ -25,6 +28,9 @@ class MemberRepositoryTest {
 
   @Autowired
   TeamRepository teamRepository;
+
+  @PersistenceContext
+  EntityManager em;
 
   @Test
   public void testMember() {
@@ -138,9 +144,14 @@ class MemberRepositoryTest {
     memberRepository.save(new Member("member4", 10));
     memberRepository.save(new Member("member5", 10));
 
-    //when
+    int age = 10;
     PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC,"username"));
-    Page<Member> page = memberRepository.findByAge(10, pageRequest);
+
+    //when
+    Page<Member> page = memberRepository.findByAge(age, pageRequest);
+
+    // DTO 로 변경
+    // Page<MemberDto> toMap = page.map(member -> new MemberDto(member.getId(), member.getUsername(), null));
 
     //then
     List<Member> content = page.getContent(); //조회된 데이터
@@ -150,5 +161,71 @@ class MemberRepositoryTest {
     assertThat(page.getTotalPages()).isEqualTo(2); //전체 페이지 번호
     assertThat(page.isFirst()).isTrue(); //첫번째 항목인가?
     assertThat(page.hasNext()).isTrue(); //다음 페이지가 있는가?
+  }
+
+  @Test
+  public void pagingSlice() {
+    //given
+    memberRepository.save(new Member("member1", 10));
+    memberRepository.save(new Member("member2", 10));
+    memberRepository.save(new Member("member3", 10));
+    memberRepository.save(new Member("member4", 10));
+    memberRepository.save(new Member("member5", 10));
+
+    int age = 10;
+    PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC,"username"));
+
+    //when
+    Slice<Member> page = memberRepository.findSliceByAge(age, pageRequest);
+
+    //then
+    List<Member> content = page.getContent(); //조회된 데이터
+    assertThat(content.size()).isEqualTo(3); //조회된 데이터 수
+    assertThat(page.getNumber()).isEqualTo(0); //페이지 번호
+    assertThat(page.isFirst()).isTrue(); //첫번째 항목인가?
+    assertThat(page.hasNext()).isTrue(); //다음 페이지가 있는가?
+  }
+
+  @Test
+  public void bulkUpdate() {
+    //given
+    memberRepository.save(new Member("member1", 10));
+    memberRepository.save(new Member("member2", 19));
+    memberRepository.save(new Member("member3", 20));
+    memberRepository.save(new Member("member4", 21));
+    memberRepository.save(new Member("member5", 40));
+
+    //when
+    int resultCount = memberRepository.bulkAgePlus(20);
+
+    //then
+    assertThat(resultCount).isEqualTo(3);
+  }
+
+  @Test
+  public void findMemberLazy() {
+    //given
+
+    //member1 -> teamA
+    //member2 -> teamB
+    Team teamA = new Team("teamA");
+    Team teamB = new Team("teamB");
+    teamRepository.save(teamA);
+    teamRepository.save(teamB);
+    memberRepository.save(new Member("member1", 10, teamA));
+    memberRepository.save(new Member("member2", 20, teamB));
+
+    em.flush();
+    em.clear();
+
+    // N + 1 발생
+    //when
+    List<Member> members = memberRepository.findAll();
+
+    //then
+    for (Member member : members) {
+      System.out.println("member.getUsername() = " + member.getUsername());
+      System.out.println("member.getTeam().getName() = " + member.getTeam().getName());
+    }
   }
 }
